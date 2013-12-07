@@ -48,7 +48,7 @@
       var stringData = JSON.parse(data.toString());
       exports.storage11.push(stringData);
       console.log(exports.storage11);
-     })
+     });
      response.end();
    }
 
