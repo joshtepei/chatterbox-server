@@ -4,13 +4,27 @@
  * You'll have to figure out a way to export this function from
  * this file and include it in basic-server.js so that it actually works.
  * *Hint* Check out the node module documentation at http://nodejs.org/api/modules.html. */
-
+  exports.storage11 = [];
   exports.handleRequest = function(request, response) {
   /* the 'request' argument comes from nodes http module. It includes info about the
   request - such as what URL the browser is requesting. */
 
   /* Documentation for both request and response can be found at
    * http://nodemanual.org/0.8.14/nodejs_ref_guide/http.html */
+
+   // switch (request.method) {
+   //   case 'GET':
+   //     console.log('switch case get triggered');
+   //     sendChat();
+   //     break;
+   //   case 'POST':
+   //     console.log('switch case post triggered')
+   //     storeChat();
+   //     break;
+   //   default:
+   //     console.log("Wrong request");
+   //     response.end();
+   // }
 
   console.log("Serving request type " + request.method + " for url " + request.url);
 
@@ -20,16 +34,29 @@
    * below about CORS. */
   var headers = defaultCorsHeaders;
 
-  headers['Content-Type'] = "text/plain";
+  headers['Content-Type'] = "application/json";
 
-  /* .writeHead() tells our server what HTTP status code to send back */
-  response.writeHead(statusCode, headers);
+   // .writeHead() tells our server what HTTP status code to send back 
+  // response.writeHead(statusCode, headers);
+  // response.write('<p>hi</p>');
 
-  /* Make sure to always call response.end() - Node will not send
-   * anything back to the client until you do. The string you pass to
-   * response.end() will be the body of the response - i.e. what shows
-   * up in the browser.*/
-  response.end("Hello, World!");
+    response.writeHead(statusCode, headers);
+
+
+   if(request.method === "POST") {
+     request.on('data', function(data) {
+      var zz = data.toString();
+      exports.storage11.push(zz);
+      console.log(exports.storage11);
+     })
+     response.end();
+   }
+
+   if(request.method === 'GET') {
+      response.write(JSON.stringify(exports.storage11));
+      response.end();
+   }
+   response.end();
 };
 
 /* These headers will allow Cross-Origin Resource Sharing (CORS).
@@ -43,3 +70,16 @@ var defaultCorsHeaders = {
   "access-control-allow-headers": "content-type, accept",
   "access-control-max-age": 10 // Seconds.
 };
+
+var sendChat = function() {
+  console.log('sendChat ran');
+}
+
+var storeChat = function() {
+  var storage = ['1', '2', '3', '4'];
+  
+  storage.forEach(function(item) {
+    console.log('hi');
+    response.write("<p>" + item + "</p>");
+  });
+}
