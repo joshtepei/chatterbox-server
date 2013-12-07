@@ -5,68 +5,66 @@
  * this file and include it in basic-server.js so that it actually works.
  * *Hint* Check out the node module documentation at http://nodejs.org/api/modules.html. */
   exports.storage11 = [];
+
   exports.handleRequest = function(request, response) {
-  /* the 'request' argument comes from nodes http module. It includes info about the
-  request - such as what URL the browser is requesting. */
 
-  /* Documentation for both request and response can be found at
-   * http://nodemanual.org/0.8.14/nodejs_ref_guide/http.html */
-
-   // switch (request.method) {
-   //   case 'GET':
-   //     console.log('switch case get triggered');
-   //     sendChat();
-   //     break;
-   //   case 'POST':
-   //     console.log('switch case post triggered')
-   //     storeChat();
-   //     break;
-   //   default:
-   //     console.log("Wrong request");
-   //     response.end();
-   // }
+   switch (request.url) {
+     case '/2/':
+       console.log('switch case get triggered');
+       headerwriter(request, response);
+       sendChat(request, response);
+       break;
+     case '/1/':
+       console.log('switch case post triggered')
+       headerwriter(request, response);
+       break;
+     default:
+       console.log("Wrong request");
+       response.statusCode = 404;
+       response.end();
+   }
 
   console.log("Serving request type " + request.method + " for url " + request.url);
 
-  var statusCode = 200;
-
-  /* Without this line, this server wouldn't work. See the note
-   * below about CORS. */
-  var headers = defaultCorsHeaders;
-
-  headers['Content-Type'] = "application/json";
-
-   // .writeHead() tells our server what HTTP status code to send back 
-  // response.writeHead(statusCode, headers);
-  // response.write('<p>hi</p>');
-
-    response.writeHead(statusCode, headers);
-
-
-   if(request.method === "POST") {
-     request.on('data', function(data) {
-      var stringData = JSON.parse(data.toString());
-      exports.storage11.push(stringData);
-      console.log(exports.storage11);
-     });
-     response.end();
-   }
-
-   if(request.method === 'GET') {
-      response.write(JSON.stringify(exports.storage11));
-      response.end();
-   }
-   response.end();
+  response.end();
 };
 
-/* These headers will allow Cross-Origin Resource Sharing (CORS).
- * This CRUCIAL code allows this server to talk to websites that
- * are on different domains. (Your chat client is running from a url
- * like file://your/chat/client/index.html, which is considered a
- * different domain.) */
 var defaultCorsHeaders = {
   "access-control-allow-origin": "*",
   "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
   "access-control-allow-headers": "content-type, accept",
   "access-control-max-age": 10 // Seconds.
 };
+
+var storeChat = function(request, response) {
+  request.on('data', function(data) {
+    var stringData = JSON.parse(data.toString());
+    exports.storage11.push(stringData);
+  });
+}
+
+var sendChat = function(request, response) {
+  return response.write(JSON.stringify(exports.storage11));
+  }
+
+var headerwriter = function(request, response) {
+  var headers = defaultCorsHeaders;
+  headers['Content-Type'] = "application/json";
+
+  switch (request.method) {
+    case "POST":
+      console.log('switch post');
+      statusCode = 201;
+      storeChat(request, response);
+      break;
+    case "GET":
+      console.log('switch get');
+      statusCode = 200;
+      break;
+    default:
+      console.log('switch default');
+      statusCode = 200;
+      break;
+  }
+  return response.writeHead(statusCode, headers);
+}
