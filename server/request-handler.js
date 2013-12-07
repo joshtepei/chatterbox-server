@@ -45,8 +45,8 @@
 
    if(request.method === "POST") {
      request.on('data', function(data) {
-      var zz = data.toString();
-      exports.storage11.push(zz);
+      var stringData = JSON.parse(data.toString());
+      exports.storage11.push(stringData);
       console.log(exports.storage11);
      })
      response.end();
@@ -70,16 +70,3 @@ var defaultCorsHeaders = {
   "access-control-allow-headers": "content-type, accept",
   "access-control-max-age": 10 // Seconds.
 };
-
-var sendChat = function() {
-  console.log('sendChat ran');
-}
-
-var storeChat = function() {
-  var storage = ['1', '2', '3', '4'];
-  
-  storage.forEach(function(item) {
-    console.log('hi');
-    response.write("<p>" + item + "</p>");
-  });
-}
