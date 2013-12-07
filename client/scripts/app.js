@@ -22,7 +22,7 @@ $('[type=file]').on('change', function () {
     }
   });
   messages.fetchData(username);
-  messages.refresh();
+  // messages.refresh();
 
 });
 
@@ -33,34 +33,41 @@ var Messages = function(){
 Messages.prototype.fetchData = function(roomname) {
   var that = this;
   $.ajax({
-    url: 'https://api.parse.com/1/classes/chatterbox?order=-createdAt',
+    url: 'http://127.0.0.1:8080/1/',
     type: 'GET',
     dataType: 'json',
     contentType: 'application/json',
     success: function(data) {
+      console.log(data);
+      console.log(data.length);
+      console.log(typeof data);
       $(".msgStream").text("");
-      for (var i = 0; i < 19; i++) {
-        var user = Messages.escapeStr(data.results[i].username);
-        var message = Messages.escapeStr(' (' + data.results[i].createdAt.slice(0, 10) + " "+ data.results[i].createdAt.slice(11, 19) + ') : ' + data.results[i].text);
-        message = message.slice(0, 140);
-        user = user.slice(0, 140);
-        if (that.friends[user]) {
-          message = '<b>' + message + '</b>';
-        }
-        if ($(location).attr('href').split('=')[1] === user) {
-          user = 'me';
-        }
-        if (!roomname) {
-          $(".msgStream").append('<li> <span class=user id=' + user +  '>' + user + '</span>' + message + '</li>');
-        } else if (data.results[i].roomname === roomname) {
-          $(".msgStream").append('<li> <span class=user id=' + user +  '>' + user + '</span>' + message + '</li>');
-        }
-        $('#friendslist').text('');
-        for (var friend in that.friends) {
-          $('#friendslist').append('<li> <span class=fri>'+ friend + '</span></li>');
-        }
+      for (var i = 0; i < data.length; i++) {
+        var user = data[i].username;
+        var message = data[i].text;
+        $(".msgStream").append('<li> <span class=user id=' + user +  '>' + user +" : " +'</span>' + message + '</li>');
+        
+      //   var user = Messages.escapeStr(data[i].username);
+      //   var message = Messages.escapeStr(' (' + data[i].slice(0, 10) + " "+ data[i].slice(11, 19) + ') : ' + data[i].text);
+      //   message = message.slice(0, 140);
+      //   user = user.slice(0, 140);
+      //   if (that.friends[user]) {
+      //     message = '<b>' + message + '</b>';
+      //   }
+      //   if ($(location).attr('href').split('=')[1] === user) {
+      //     user = 'me';
+      //   }
+      //   if (!roomname) {
+      //     $(".msgStream").append('<li> <span class=user id=' + user +  '>' + user + '</span>' + message + '</li>');
+      //   } else if (data[i].roomname === roomname) {
+      //     $(".msgStream").append('<li> <span class=user id=' + user +  '>' + user + '</span>' + message + '</li>');
+      //   }
+      //   $('#friendslist').text('');
+      //   for (var friend in that.friends) {
+      //     $('#friendslist').append('<li> <span class=fri>'+ friend + '</span></li>');
+      //   }
 
-      }
+       }
     },
 
     error: function(data) {
@@ -75,7 +82,7 @@ Messages.prototype.sendData = function(username) {
   var roomname = $('.room').val();
   $('.msg').val("");
   $.ajax({
-    url: 'https://api.parse.com/1/classes/chatterbox',
+    url: 'http://127.0.0.1:8080/1/', // classes/chatterbox
     type: 'POST',
     contentType: 'application/json',
     data: JSON.stringify({
@@ -83,9 +90,8 @@ Messages.prototype.sendData = function(username) {
       username: username,
       roomname: roomname
     }),
-    success: function() {
-      console.log('it sent');
-      that.fetchData(roomname);
+    success: function(data) {
+      console.log('sendData function working');
     },
     error: function() {
       console.log('failed to send message');
@@ -117,16 +123,17 @@ var refreshClock = function() {
   $("#clock").append("<p>" + time + "</p>");
 }
 
-Messages.prototype.refresh = function() {
-  var that = this;
-  setInterval(function() {
-    var roomname = $('.room').val();
-    that.fetchData(roomname);
-    refreshClock();
-  }, 1000); };
+// Messages.prototype.refresh = function() {
+//   var that = this;
+//   setInterval(function() {
+//     var roomname = $('.room').val();
+//     that.fetchData(roomname);
+//     refreshClock();
+//   }, 1000); };
 
 var newMessageSendView = function(username, that){
   $(".sendButton").on("click", function() {
+    console.log("Sent")
     that.sendData(username);
   });
 };
