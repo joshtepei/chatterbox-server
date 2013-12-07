@@ -17,6 +17,7 @@
      case '/1/':
        console.log('switch case post triggered')
        headerwriter(request, response);
+       response.end('[]');
        break;
      default:
        console.log("Wrong request");
@@ -56,6 +57,7 @@ var headerwriter = function(request, response) {
       console.log('switch post');
       statusCode = 201;
       storeChat(request, response);
+      return response.writeHead(statusCode, headers);
       break;
     case "GET":
       console.log('switch get');
