@@ -45,7 +45,7 @@ var storeChat = function(request, response) {
 }
 
 var sendChat = function(request, response) {
-  return response.write(JSON.stringify(exports.storage11));
+  return response.write(JSON.stringify(exports.storage11.reverse()));
   }
 
 var headerwriter = function(request, response) {
