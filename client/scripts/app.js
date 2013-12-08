@@ -33,7 +33,7 @@ var Messages = function(){
 Messages.prototype.fetchData = function(roomname) {
   var that = this;
   $.ajax({
-    url: 'http://127.0.0.1:8080/1/',
+    url: 'http://127.0.0.1:8080/2/',
     type: 'GET',
     dataType: 'json',
     contentType: 'application/json',
@@ -92,9 +92,10 @@ Messages.prototype.sendData = function(username) {
     }),
     success: function(data) {
       console.log('sendData function working');
+      Messages.prototype.fetchData();
     },
     error: function() {
-      console.log('failed to send message');
+      console.log("err", arguments)
     }
   });
 };
